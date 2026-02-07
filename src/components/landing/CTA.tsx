@@ -1,0 +1,18 @@
+import { Button } from "@/components/ui/Button"
+
+export function CTA() {
+  return (
+    <section className="py-28 bg-primary text-white text-center">
+      <h2 className="text-3xl font-bold">
+        Ready to service your car the smart way?
+      </h2>
+      <p className="mt-4 opacity-90">
+        Book your service in under 2 minutes.
+      </p>
+
+      <div className="mt-8">
+        <Button variant="secondary">Book Now</Button>
+      </div>
+    </section>
+  )
+}
