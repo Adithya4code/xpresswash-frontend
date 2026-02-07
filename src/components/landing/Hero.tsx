@@ -18,7 +18,7 @@ export function Hero() {
     <section 
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      className="group relative isolate overflow-hidden bg-background min-h-[100vh] flex flex-col justify-center"
+      className="group relative isolate overflow-hidden bg-background min-h-screen flex flex-col justify-center"
     >
       {/* 1. This calls the utility from your CSS */}
       <div 

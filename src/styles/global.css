@@ -1,31 +1,64 @@
 @import "tailwindcss";
 
 @theme {
-  /* Core Brand Colors */
-  --color-primary: #0b1f3b;
-  --color-accent: #2f6fed;
-  
-  /* UI Colors */
-  --color-background: #f8fafc;
-  --color-surface: #ffffff;
-  --color-text: #0f172a;
-  --color-muted: #64748b;
+  /* Core Brand Colors linked to CSS Variables */
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-blue-deep: var(--blue-deep);
 
-  /* Extended Blues */
-  --color-blue-soft: #eaf1ff;
-  --color-blue-deep: #08162e;
-  --color-blue-glow: #3b82f6;
-
-  /* Custom Border Radius */
   --radius-xl: 14px;
 
-  --background-image-glow-top: radial-gradient(circle at top, rgba(47, 111, 237, 0.2) 0%, transparent 60%);
+  /* This uses the accent variable, so it updates in dark mode automatically! */
+  --background-image-glow-top: radial-gradient(
+    circle at top, 
+    color-mix(in srgb, var(--accent), transparent 80%) 0%, 
+    transparent 60%
+  );
 }
 
+/* 1. Light Mode Definitions */
+:root {
+  --primary: #0b1f3b;
+  --accent: #2f6fed;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --blue-deep: #08162e;
+}
+
+/* 2. Dark Mode Overrides */
+.dark {
+  --primary: #93c5fd;
+  --accent: #60a5fa;
+  --background: #090f1a;
+  --surface: #0f172a;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --blue-deep: #020617;
+}
+
+/* 3. Your Mouse Glow Utility */
 @utility bg-mouse-glow {
   background-image: radial-gradient(
     600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
-    color-mix(in srgb, var(--color-accent), transparent 85%),
+    color-mix(in srgb, var(--accent), transparent 85%),
     transparent 80%
   );
+}
+
+
+@layer base {
+  html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  body {
+    @apply bg-background text-text;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
 }

@@ -65,7 +65,7 @@ export function ServicesPreview() {
               <Card className="h-full flex flex-col p-6">
                 <div className="flex justify-between items-start">
                   <h3 className="text-lg font-semibold">{service.name}</h3>
-                  <span className="text-xs text-muted-foreground bg-gray-100 px-2 py-1 rounded">
+                  <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
                     {service.durationMinutes} mins
                   </span>
                 </div>
