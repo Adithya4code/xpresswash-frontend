@@ -1,14 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  /* Colors */
+  /* Core Brand Colors */
   --color-primary: #0b1f3b;
   --color-accent: #2f6fed;
+  
+  /* UI Colors */
   --color-background: #f8fafc;
   --color-surface: #ffffff;
   --color-text: #0f172a;
   --color-muted: #64748b;
 
+  /* Extended Blues */
+  --color-blue-soft: #eaf1ff;
+  --color-blue-deep: #08162e;
+  --color-blue-glow: #3b82f6;
+
   /* Custom Border Radius */
   --radius-xl: 14px;
+
+  --background-image-glow-top: radial-gradient(circle at top, rgba(47, 111, 237, 0.2) 0%, transparent 60%);
 }

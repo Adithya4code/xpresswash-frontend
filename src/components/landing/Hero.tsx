@@ -3,7 +3,11 @@ import { Button } from "@/components/ui/Button"
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden bg-background">
+    <section className="relative isolate overflow-hidden bg-background">
+      <div 
+        className="absolute inset-0 -z-10 bg-glow-top" 
+        aria-hidden="true" 
+      />
       <div className="mx-auto max-w-7xl px-6 py-28 text-center">
         <motion.h1
           initial={{ opacity: 0, y: 12 }}

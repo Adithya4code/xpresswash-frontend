@@ -5,6 +5,7 @@ import { ValueProps } from "@/components/landing/ValueProps"
 import { HowItWorks } from "@/components/landing/HowItWorks"
 import { WhyUs } from "@/components/landing/WhyUs"
 import { CTA } from "@/components/landing/CTA"
+import { ServicesPreview } from "@/components/landing/ServicePreview"
 
 export default function Landing() {
   return (
@@ -14,6 +15,7 @@ export default function Landing() {
       <ValueProps />
       <HowItWorks />
       <WhyUs />
+      <ServicesPreview />
       <CTA />
       <Footer />
     </>
