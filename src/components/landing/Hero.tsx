@@ -1,18 +1,35 @@
-import { motion } from "motion/react"
-import { Button } from "@/components/ui/Button"
+import { motion } from "motion/react";
+import { useRef } from "react";
+import { Button } from "@/components/ui/Button";
 
 export function Hero() {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+    const { left, top } = containerRef.current.getBoundingClientRect();
+    
+    // Set the CSS variables directly on the element's style
+    containerRef.current.style.setProperty("--mouse-x", `${e.clientX - left}px`);
+    containerRef.current.style.setProperty("--mouse-y", `${e.clientY - top}px`);
+  };
+
   return (
-    <section className="relative isolate overflow-hidden bg-background">
+    <section 
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      className="group relative isolate overflow-hidden bg-background min-h-[100vh] flex flex-col justify-center"
+    >
+      {/* 1. This calls the utility from your CSS */}
       <div 
-        className="absolute inset-0 -z-10 bg-glow-top" 
+        className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-500 group-hover:opacity-100 bg-mouse-glow" 
         aria-hidden="true" 
       />
-      <div className="mx-auto max-w-7xl px-6 py-28 text-center">
+
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-28 text-center">
         <motion.h1
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
           className="text-4xl md:text-6xl font-bold tracking-tight text-text"
         >
           Premium Car Service. <br />

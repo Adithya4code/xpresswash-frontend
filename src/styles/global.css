@@ -21,3 +21,11 @@
 
   --background-image-glow-top: radial-gradient(circle at top, rgba(47, 111, 237, 0.2) 0%, transparent 60%);
 }
+
+@utility bg-mouse-glow {
+  background-image: radial-gradient(
+    600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
+    color-mix(in srgb, var(--color-accent), transparent 85%),
+    transparent 80%
+  );
+}
