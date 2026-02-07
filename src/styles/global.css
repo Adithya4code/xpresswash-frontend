@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+@theme {
+  /* Colors */
+  --color-primary: #0b1f3b;
+  --color-accent: #2f6fed;
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+  --color-text: #0f172a;
+  --color-muted: #64748b;
+
+  /* Custom Border Radius */
+  --radius-xl: 14px;
+}
