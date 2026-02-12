@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/Button"
-import { ThemeToggle } from "@/components/ui/ThemeToggle"
 
 export function Navbar() {
   return (
@@ -10,7 +9,6 @@ export function Navbar() {
         </span>
 
         <div className="flex items-center gap-4">
-          <ThemeToggle />
           <Button>Book Now</Button>
         </div>
       </div>

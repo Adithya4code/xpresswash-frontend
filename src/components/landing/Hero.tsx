@@ -47,14 +47,14 @@ export function Hero() {
           className="text-4xl md:text-6xl font-bold tracking-tight text-text"
         >
           Premium Car Service. <br />
-          <span className="text-primary">Booked in Minutes.</span>
+          <span className="text-primary">Booked in Minutes!</span>
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.4 }}
-          className="mt-6 text-lg text-muted max-w-2xl mx-auto"
+          className="mt-6 text-lg text-white max-w-2xl mx-auto"
         >
           Hassle-free car servicing with transparent pricing, expert technicians,
           and real-time booking — all from your phone.
