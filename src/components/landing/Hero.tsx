@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { Button } from "@/components/ui/Button";
 
 // Import the image from the public/media folder (move the image there if not already)
-const heroBgUrl = "/media/pexels-introspectivedsgn-4876641.jpg";
+const heroBgUrl = "/media/image.png";
 
 export function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
