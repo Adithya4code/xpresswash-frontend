@@ -34,7 +34,10 @@ export function Footer() {
               Book your service in under 2 minutes.
             </p>
             {/* Optional: Add a small button or call to action here */}
-            <button className="mt-4 text-xs font-bold uppercase tracking-wider text-accent hover:underline">
+            <button
+              className="mt-4 text-xs font-bold uppercase tracking-wider text-accent hover:underline"
+              onClick={() => window.location.href = '/bookings'}
+            >
               Book Now →
             </button>
           </div>

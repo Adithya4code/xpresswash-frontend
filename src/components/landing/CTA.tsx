@@ -1,6 +1,9 @@
-import { Button } from "@/components/ui/Button"
+
+import { Button } from "@/components/ui/Button";
+import { useNavigate } from "react-router-dom";
 
 export function CTA() {
+  const navigate = useNavigate();
   return (
     <section className="py-28 bg-primary text-white text-center">
       <h2 className="text-3xl font-bold">
@@ -11,8 +14,8 @@ export function CTA() {
       </p>
 
       <div className="mt-8">
-        <Button variant="secondary">Book Now</Button>
+        <Button variant="secondary" onClick={() => navigate("/bookings")}>Book Now</Button>
       </div>
     </section>
-  )
+  );
 }

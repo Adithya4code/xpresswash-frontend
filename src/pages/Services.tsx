@@ -1,10 +1,13 @@
+
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchServices } from "@/api/services";
 import type { Service } from "@/api/services";
 
 
-export default function Services() {
+export function Services() {
   const [services, setServices] = useState<Service[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchServices().then(setServices);
@@ -19,7 +22,7 @@ export default function Services() {
           <h2>{s.name}</h2>
           <p>{s.description}</p>
           <p>₹{s.price} • {s.durationMinutes} mins</p>
-          <button>Book Now</button>
+          <button onClick={() => navigate("/bookings")}>Book Now</button>
         </div>
       ))}
     </div>
