@@ -1,95 +1,59 @@
-import { useEffect, useState } from "react";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { motion } from "motion/react";
+// components/ServicesPreview.tsx
+"use client";
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
-// Define the type based on your API response
-export type Service = {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  durationMinutes: number;
-};
+import execDetail from "@/assets/images/executive_detail.webp";
+import ceramic from "@/assets/images/ceramic_coating.webp";
+import interior from "@/assets/images/interior_sanitize.webp";
+
+const SERVICES = [
+  { name: "Executive Detail", img: execDetail },
+  { name: "Ceramic Coating", img: ceramic },
+  { name: "Interior Sanitize", img: interior },
+];
 
 export function ServicesPreview() {
-  const [services, setServices] = useState<Service[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        setIsLoading(true);
-        // Replace with your actual endpoint URL
-        const response = await fetch("http://localhost:8080/services"); 
-        if (!response.ok) throw new Error("Failed to fetch services");
-        
-        const data = await response.json();
-        setServices(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Something went wrong");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchServices();
-  }, []);
-
-  if (isLoading) {
-    return <div className="py-24 text-center">Loading services...</div>;
-  }
-
-  if (error) {
-    return <div className="py-24 text-center text-red-500">Error: {error}</div>;
-  }
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-24 bg-blueSoft">
-      <div className="mx-auto max-w-7xl px-6">
-        <header className="text-center">
-          <h2 className="text-3xl font-bold">Popular Services</h2>
-          <p className="mt-4 text-muted">
-            Carefully designed packages for every car and every need.
-          </p>
-        </header>
-
-        <div className="mt-14 grid gap-8 md:grid-cols-3">
-          {services.map((service) => (
-            <motion.div
-              key={service.id}
-              whileHover={{ y: -6 }}
-              transition={{ duration: 0.25 }}
-            >
-              <Card className="h-full flex flex-col p-6">
-                <div className="flex justify-between items-start">
-                  <h3 className="text-lg font-semibold">{service.name}</h3>
-                  <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-                    {service.durationMinutes} mins
-                  </span>
-                </div>
-
-                <p className="mt-2 text-muted text-sm flex-grow">
-                  {service.description}
-                </p>
-
-                <div className="mt-8 flex items-center justify-between">
-                  <span className="text-xl font-bold text-primary">
-                    {/* Formatting numeric price to Currency */}
-                    {new Intl.NumberFormat("en-IN", {
-                      style: "currency",
-                      currency: "INR",
-                      maximumFractionDigits: 0,
-                    }).format(service.price)}
-                  </span>
-                  <Button variant="ghost">View Details</Button>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+    <section className="py-40 bg-surface relative">
+      <div className="container mx-auto px-12">
+        {SERVICES.map((service, i) => (
+          <div
+            key={i}
+            onMouseEnter={() => setHoveredIndex(i)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            className="group relative border-t border-muted/20 py-16 flex items-center justify-between cursor-pointer overflow-hidden"
+          >
+            <h3 className="text-7xl font-bold uppercase transition-all duration-500 group-hover:text-accent group-hover:pl-8">
+              {service.name}
+            </h3>
+            <span className="text-muted group-hover:rotate-45 transition-transform duration-500">
+              ↗
+            </span>
+          </div>
+        ))}
       </div>
+
+      {/* Floating Image Follower */}
+      <AnimatePresence>
+        {hoveredIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-[500px] pointer-events-none z-50 overflow-hidden rounded-xl shadow-2xl"
+          >
+            <motion.img
+              key={hoveredIndex}
+              src={SERVICES[hoveredIndex].img}
+              className="w-full h-full object-cover"
+              layoutId="service-img"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
