@@ -17,7 +17,7 @@ export function ServicesPreview() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-40 bg-surface relative">
+    <section id="services" className="py-40 bg-surface relative">
       <div className="container mx-auto px-12">
         {SERVICES.map((service, i) => (
           <div

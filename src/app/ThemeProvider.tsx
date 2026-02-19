@@ -1,36 +1,39 @@
-import { createContext, useContext, useEffect, useState } from "react"
+"use client";
 
-type Theme = "light" | "dark"
-
-const ThemeContext = createContext<{
-  theme: Theme
-  toggle: () => void
-}>({ theme: "light", toggle: () => {} })
+import { useEffect, useState, startTransition } from "react";
+import { type Theme, ThemeContext } from "./ThemeContext"; // Import from the other file
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light")
+  const [theme, setTheme] = useState<Theme>("dark");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("theme") as Theme | null
-    const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches
-    const initial = stored ?? (systemDark ? "dark" : "light")
+    const stored = localStorage.getItem("theme") as Theme | null;
+    const systemDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
+    const initial = stored ?? (systemDark ? "dark" : "light");
 
-    setTheme(initial)
-    document.documentElement.classList.toggle("dark", initial === "dark")
-  }, [])
+    startTransition(() => {
+      setTheme(initial);
+      setMounted(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
+    root.classList.add(theme);
+    localStorage.setItem("theme", theme);
+  }, [theme, mounted]);
 
   const toggle = () => {
-    const next = theme === "light" ? "dark" : "light"
-    setTheme(next)
-    localStorage.setItem("theme", next)
-    document.documentElement.classList.toggle("dark", next === "dark")
-  }
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  };
 
+  // React 19: Pass value directly to the Context
   return (
-    <ThemeContext.Provider value={{ theme, toggle }}>
-      {children}
-    </ThemeContext.Provider>
-  )
+    <ThemeContext value={{ theme, toggle, mounted }}>{children}</ThemeContext>
+  );
 }
-
-export const useTheme = () => useContext(ThemeContext)

@@ -1,3 +1,5 @@
+// constants/features.ts
+
 export interface Feature {
   title: string;
   desc: string;
@@ -5,31 +7,23 @@ export interface Feature {
 
 export const FEATURES: Feature[] = [
   {
-    title: "Doorstep Convenience",
-    desc: "We come to your location. No driving, no waiting, no wasting time. Your car gets cleaned wherever you are — home, office, or anywhere else.",
+    title: "Mobile Precision",
+    desc: "We bring our fully-equipped studio to your doorstep. No driving, no queues—professional car care that fits your schedule.",
   },
   {
-    title: "Professional Equipment",
-    desc: "We use advanced machines and high-grade tools designed for safe and effective cleaning. Every wash is handled with precision and care.",
+    title: "Advanced Technology",
+    desc: "Utilizing industrial-grade equipment and specialized tools to ensure a safe, deep clean that standard washes simply can't match.",
   },
   {
-    title: "Eco-Friendly Methods",
-    desc: "Minimal water usage and environmentally safe products ensure your car shines while staying responsible to the planet.",
+    title: "Sustainable Shine",
+    desc: "Our high-efficiency methods and eco-friendly products deliver a spotless finish while minimizing water waste and environmental impact.",
   },
   {
-    title: "Time-Saving Service",
-    desc: "Book your preferred slot and let us handle the rest. No queues. No delays. Your time stays yours.",
+    title: "Obsessive Quality",
+    desc: "Trained specialists and a strict attention to detail ensure your vehicle receives a showroom-level restoration, inside and out.",
   },
   {
-    title: "Quality You Can See",
-    desc: "Trained professionals, obsessive attention to detail, and a spotless finish — every single time.",
-  },
-  {
-    title: "Transparent Pricing",
-    desc: "Clear packages. No surprises. No hidden charges. Pay only for the services you choose.",
-  },
-  {
-    title: "Monthly Plans Available",
-    desc: "Enjoy regular car care with discounted pricing and priority scheduling. Perfect for maintaining showroom shine.",
+    title: "Transparent Care",
+    desc: "Fixed pricing, no hidden fees, and flexible monthly maintenance plans designed to keep your vehicle pristine year-round.",
   },
 ];

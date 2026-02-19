@@ -1,64 +1,53 @@
 @import "tailwindcss";
 
 @theme {
-  /* Core Brand Colors linked to CSS Variables */
-  --color-primary: var(--primary);
-  --color-accent: var(--accent);
+  /* High-End Branding Tokens */
+  --color-primary: var(--primary); /* The core brand vibe */
+  --color-accent: var(--accent); /* The "glow" and active elements */
   --color-background: var(--background);
-  --color-surface: var(--surface);
+  --color-surface: var(--surface); /* For cards/elevated elements */
   --color-text: var(--text);
-  --color-muted: var(--muted);
-  --color-blue-deep: var(--blue-deep);
+  --color-muted: var(--muted); /* For descriptions and secondary info */
 
-  --radius-xl: 14px;
-
-  /* This uses the accent variable, so it updates in dark mode automatically! */
-  --background-image-glow-top: radial-gradient(
-    circle at top, 
-    color-mix(in srgb, var(--accent), transparent 80%) 0%, 
-    transparent 60%
-  );
+  /* Custom Transitions */
+  --transition-smooth: all 0.6s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
-/* 1. Light Mode Definitions */
 :root {
-  --primary: #0b1f3b;
-  --accent: #2f6fed;
-  --background: #f8fafc;
-  --surface: #ffffff;
-  --text: #0f172a;
-  --muted: #64748b;
-  --blue-deep: #08162e;
+  /* LIGHT: "The Silver Studio" */
+  --background: #f1f5f9; /* Cool Zinc Grey - looks like brushed steel */
+  --surface: #ffffff; /* Clean white surfaces */
+  --primary: #0f172a; /* Deep Navy/Black */
+  --accent: #4f46e5; /* Sharp Electric Indigo - very technical and clean */
+  --accent-glow: #818cf8;
+  --text: #0f172a; /* High-contrast Navy */
+  --muted: #64748b; /* Slate grey */
+  --accent-rgb: 79, 70, 229;
 }
 
-/* 2. Dark Mode Overrides */
 .dark {
-  --primary: #93c5fd;
-  --accent: #60a5fa;
-  --background: #090f1a;
-  --surface: #0f172a;
-  --text: #e2e8f0;
-  --muted: #94a3b8;
-  --blue-deep: #020617;
+  /* DARK: "The Carbon Garage" */
+  --background: #080808; /* Pure Carbon - deeper than regular dark mode */
+  --surface: #111111; /* Subtle elevation */
+  --primary: #afff00; /* "Cyber Lime" - like Lamborghini's Verde Mantis */
+  --accent: #afff00; /* High-visibility performance accent */
+  --accent-glow: #d4ff00;
+  --text: #ffffff;
+  --muted: #888888;
+  --accent-rgb: 175, 255, 0;
 }
 
-/* 3. Your Mouse Glow Utility */
 @utility bg-mouse-glow {
   background-image: radial-gradient(
     600px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
-    color-mix(in srgb, var(--accent), transparent 85%),
+    rgba(var(--accent-rgb), 0.15),
     transparent 80%
   );
 }
 
-
 @layer base {
-  html {
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-
   body {
-    @apply bg-background text-text;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    @apply bg-background text-text selection:bg-accent selection:text-white;
+    transition: background-color 0.5s ease;
   }
 }

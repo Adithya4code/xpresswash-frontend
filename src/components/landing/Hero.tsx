@@ -38,7 +38,7 @@ export function Hero() {
             transition={{ duration: 0.8, ease: [0.33, 1, 0.68, 1] }}
             className="block text-accent font-mono tracking-[0.3em] uppercase text-sm"
           >
-            Est. 2024 — Precision Care
+            Est. 2026 — Precision Care
           </motion.span>
         </div>
 
