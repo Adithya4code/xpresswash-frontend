@@ -1,64 +1,69 @@
 "use client";
 
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useSpring,
-  MotionValue,
-} from "motion/react";
-import { useRef } from "react";
+import { motion, useScroll, useTransform, useSpring } from "motion/react";
+import { useRef, useEffect, useState } from "react";
 import { FEATURES, type Feature } from "@/utils/constants";
 
 export function WhyUs() {
   const targetRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check window size for responsive logic
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: targetRef,
     offset: ["start start", "end end"],
   });
 
-  // Smooth the scroll progress for high-end feel
   const smoothProgress = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001,
   });
 
-  // Calculate horizontal move: (Total features - 1) * card width factor
-  const x = useTransform(smoothProgress, [0, 1], ["0%", "-75%"]);
+  // Desktop horizontal move: -75% move | Mobile: 0
+  const x = useTransform(
+    smoothProgress,
+    [0, 1],
+    ["0%", isMobile ? "0%" : "-75%"],
+  );
 
-  // High-performance skew effect
   const skewX = useTransform(
     smoothProgress,
     [0, 0.5, 1],
-    ["0deg", "-2deg", "0deg"],
+    ["0deg", isMobile ? "0deg" : "-2deg", "0deg"],
   );
 
   return (
-    <section ref={targetRef} className="relative h-[500vh] bg-background">
-      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
-        {/* Cinematic Background Text */}
-        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-full whitespace-nowrap pointer-events-none opacity-[0.03] select-none">
+    <section
+      ref={targetRef}
+      // On mobile, height is auto to fit content. On desktop, it's 500vh for scroll duration.
+      className="relative h-auto md:h-[500vh] bg-background py-20 md:py-0"
+    >
+      <div className="md:sticky md:top-0 flex h-auto md:h-screen items-center overflow-hidden">
+        {/* Background Decorative Text - Hidden or subtle on mobile */}
+        <div className="absolute top-1/2 left-0 -translate-y-1/2 w-full whitespace-nowrap pointer-events-none opacity-[0.03] select-none hidden md:block">
           <motion.h2
-            style={{ x: useTransform(smoothProgress, [0, 1], ["5%", "-15%"]) }}
+            style={{ x: useTransform(smoothProgress, [0, 1], ["10%", "-20%"]) }}
             className="text-[22vw] font-black uppercase italic text-text"
           >
-            Pure Obsession Pure Obsession
+            Obsession Obsession
           </motion.h2>
         </div>
 
         <div className="flex flex-col w-full relative z-10">
-          <header className="px-12 mb-16 flex justify-between items-end">
+          <header className="px-6 md:px-12 mb-10 md:mb-16 flex justify-between items-end">
             <div>
-              <motion.span
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                className="text-accent font-mono tracking-[0.3em] uppercase text-xs mb-4 block"
-              >
-                // The Xpress Standard
+              <motion.span className="text-accent font-mono tracking-[0.3em] uppercase text-[10px] md:text-xs mb-2 md:mb-4 block">
+                // Performance Metrics
               </motion.span>
-              <h2 className="text-5xl md:text-8xl font-black text-text uppercase italic leading-[0.8]">
+              <h2 className="text-6xl md:text-8xl font-black text-text uppercase italic leading-[0.8]">
                 Why <br />
                 <span
                   className="text-transparent"
@@ -82,15 +87,13 @@ export function WhyUs() {
             </div>
           </header>
 
-          {/* Feature Track */}
-          <motion.div style={{ x, skewX }} className="flex gap-10 px-12">
+          {/* Wrapper for the cards */}
+          <motion.div
+            style={{ x, skewX }}
+            className="flex flex-col md:flex-row gap-6 md:gap-10 px-6 md:px-12"
+          >
             {FEATURES.map((feature, i) => (
-              <FeatureCard
-                key={feature.title}
-                feature={feature}
-                index={i}
-                progress={smoothProgress}
-              />
+              <FeatureCard key={feature.title} feature={feature} index={i} />
             ))}
           </motion.div>
         </div>
@@ -102,54 +105,50 @@ export function WhyUs() {
 interface FeatureCardProps {
   feature: Feature;
   index: number;
-  progress: MotionValue<number>;
 }
 
-const FeatureCard = ({ feature, index, progress }: FeatureCardProps) => {
-  // Parallax movement for the text inside the card
-  const contentX = useTransform(progress, [0, 1], [30, -30]);
-
+const FeatureCard = ({ feature, index }: FeatureCardProps) => {
   return (
-    <div className="group relative h-[480px] w-[340px] md:w-[500px] shrink-0 overflow-hidden bg-surface border border-muted/10 rounded-[2rem] p-12 transition-smooth hover:border-accent/30">
-      {/* Background Number Overlay */}
-      <span className="absolute -top-6 -right-6 text-[12rem] font-black text-text/[0.03] italic leading-none group-hover:text-accent/[0.05] transition-colors duration-700">
+    <motion.div
+      // On Mobile: Trigger animation when card enters viewport
+      // On Desktop: Part of the horizontal slide
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      className="group relative h-[350px] md:h-[480px] w-full md:w-[500px] shrink-0 overflow-hidden bg-surface border border-muted/10 rounded-[1.5rem] md:rounded-[2rem] p-8 md:p-12 transition-all duration-500 hover:border-accent/30"
+    >
+      <span className="absolute -top-4 -right-4 text-[6rem] md:text-[12rem] font-black text-text/[0.03] italic leading-none group-hover:text-accent/[0.05] transition-colors duration-700">
         {index + 1}
       </span>
 
       <div className="relative z-10 h-full flex flex-col">
-        <div className="mb-12">
-          <div className="w-10 h-10 rounded-xl bg-background border border-muted/10 flex items-center justify-center group-hover:border-accent/50 transition-colors">
+        <div className="mb-6 md:mb-12">
+          <div className="w-10 h-10 rounded-xl bg-background border border-muted/10 flex items-center justify-center">
             <div className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
           </div>
         </div>
 
-        <motion.div style={{ x: contentX }} className="flex-1">
-          <h3 className="text-3xl font-black text-text uppercase italic mb-6 tracking-tight">
+        <div className="flex-1">
+          <h3 className="text-2xl md:text-3xl font-black text-text uppercase italic mb-3 md:mb-6 tracking-tight">
             {feature.title}
           </h3>
-          <p className="text-muted text-lg leading-relaxed max-w-[90%]">
+          <p className="text-muted text-sm md:text-lg leading-relaxed max-w-[90%]">
             {feature.desc}
           </p>
-        </motion.div>
+        </div>
 
-        {/* Technical Footer */}
-        <div className="pt-8 border-t border-muted/5 flex items-center justify-between">
+        <div className="pt-6 border-t border-muted/5 flex items-center justify-between">
           <div className="flex gap-2">
             {[1, 2, 3].map((b) => (
-              <div
-                key={b}
-                className="w-1 h-1 bg-accent/30 rounded-full group-hover:bg-accent transition-colors"
-              />
+              <div key={b} className="w-1 h-1 bg-accent/30 rounded-full" />
             ))}
           </div>
-          <span className="font-mono text-[10px] uppercase text-muted tracking-tighter">
-            Module_0{index + 1} // System.Active
+          <span className="font-mono text-[9px] uppercase text-muted">
+            XP_UNIT_0{index + 1}
           </span>
         </div>
       </div>
-
-      {/* Subtle Inner Gradient Glow */}
-      <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-    </div>
+    </motion.div>
   );
 };
