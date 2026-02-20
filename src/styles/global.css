@@ -14,15 +14,18 @@
 }
 
 :root {
-  /* LIGHT: "The Silver Studio" */
-  --background: #f1f5f9; /* Cool Zinc Grey - looks like brushed steel */
-  --surface: #ffffff; /* Clean white surfaces */
-  --primary: #0f172a; /* Deep Navy/Black */
-  --accent: #4f46e5; /* Sharp Electric Indigo - very technical and clean */
-  --accent-glow: #818cf8;
-  --text: #0f172a; /* High-contrast Navy */
-  --muted: #64748b; /* Slate grey */
-  --accent-rgb: 79, 70, 229;
+  /* LIGHT: "The Blue Studio" - Monochromatic & Technical */
+  --background: #0f172a; /* Deep Navy (Your old Primary) */
+  --surface: #1e293b; /* Polished Slate */
+  --primary: #38bdf8; /* Sky Blue */
+
+  /* THE FIX: Against Deep Navy, a bright Cyan/Sky Blue accent 
+     will invert into a soft, glowing technical blue rather than green. */
+  --accent: #38bdf8;
+  --accent-glow: #0ea5e9;
+  --text: #f1f5f9; /* Light Blue-Grey text */
+  --muted: #94a3b8;
+  --accent-rgb: 56, 189, 248;
 }
 
 .dark {
