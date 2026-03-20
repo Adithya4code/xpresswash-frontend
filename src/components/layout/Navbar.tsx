@@ -64,7 +64,8 @@ export function Navbar() {
             Contact
           </button>
           <Button
-            style={{ backgroundColor: 'var(--blue-main)', color: '#fff', border: 'none' }}
+            style={{ backgroundColor: '#4169E1', color: '#fff', border: 'none' }}
+
             onClick={() => navigate("/bookings")}
           >
             Book Now
