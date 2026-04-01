@@ -14,10 +14,10 @@ export default function Landing() {
     <>
       <Navbar />
       <Hero />
+      <ServicesPreview />
       <ValueProps />
       <HowItWorks />
       <WhyUs />
-      <ServicesPreview />
       <CTA />
       <FAQSection />
       <Footer />
