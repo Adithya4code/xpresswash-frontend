@@ -17,12 +17,11 @@ export default function Landing() {
       <Navbar />
       <Hero />
       <ServicesPreview />
+      <AddonPreview />
+      <SubscriptionPreview />
       <ValueProps />
       <HowItWorks />
       <WhyUs />
-      <ServicesPreview />
-      <AddonPreview />
-      <SubscriptionPreview />
       <LocationPreview />
       <CTA />
       <FAQSection />
