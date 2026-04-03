@@ -33,17 +33,50 @@ export default function Bookings() {
   const [form, setForm] = useState({
     name: "",
     contact: "",
-    service: SERVICES[0],
-    location: LOCATIONS[0],
-    addon: ADDONS[0],
+    service: "",
+    location: "",
+    addon: "",
     date: "",
   });
 
   const [submitted, setSubmitted] = useState(false);
-
   const dateRef = useRef<HTMLInputElement>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  useEffect(() => {
+    const loadData = async () => {
+      const { data: s } = await supabase
+        .from("config_services")
+        .select("id, label")
+        .eq("is_active", true);
+
+      const { data: l } = await supabase
+        .from("config_locations")
+        .select("id, label")
+        .eq("is_active", true);
+
+      const { data: a } = await supabase
+        .from("config_addons")
+        .select("id, label")
+        .eq("is_active", true);
+
+      setServices(s || []);
+      setLocations(l || []);
+      setAddons(a || []);
+
+      setForm((prev) => ({
+        ...prev,
+        service: s?.[0]?.label || "",
+        location: l?.[0]?.label || "",
+        addon: a?.[0]?.label || "",
+      }));
+    };
+
+    loadData();
+  }, []);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -59,7 +92,9 @@ Location: ${form.location}
 Add-on: ${form.addon}
 Date: ${form.date}`;
 
-    const whatsappUrl = `https://wa.me/9538926581?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/9538926581?text=${encodeURIComponent(
+      message,
+    )}`;
     window.open(whatsappUrl, "_blank");
   };
 
@@ -98,7 +133,6 @@ Date: ${form.date}`;
             onSubmit={handleSubmit}
             className="bg-white border border-gray-200 shadow-2xl rounded-2xl p-8 space-y-5 transition hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]"
           >
-
             {/* Name */}
             <div>
               <label className="block text-sm text-gray-700 mb-1">Customer Name</label>
@@ -205,9 +239,16 @@ Date: ${form.date}`;
               type="submit"
               className="w-full py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 transition transform hover:scale-[1.02] shadow-lg"
             >
+              {addons.map((a) => (
+                <option key={a.id} value={a.label}>
+                  {a.label}
+                </option>
+              ))}
+            </select>
+
+            <button className="w-full py-3 rounded-lg bg-blue-500 text-white">
               Book Service 🚗
             </button>
-
           </form>
         )}
       </div>
