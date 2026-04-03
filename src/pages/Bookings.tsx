@@ -1,5 +1,8 @@
 import React, { useState, useRef } from "react";
+<<<<<<< HEAD
 import { useNavigate } from "react-router-dom";
+=======
+>>>>>>> parent of bd4000a (added basic toggle for website)
 
 const SERVICES = [
   "Express Wash",
@@ -29,54 +32,24 @@ const ADDONS = [
 ];
 
 export default function Bookings() {
+<<<<<<< HEAD
   const navigate = useNavigate();
+=======
+>>>>>>> parent of bd4000a (added basic toggle for website)
   const [form, setForm] = useState({
     name: "",
     contact: "",
-    service: "",
-    location: "",
-    addon: "",
+    service: SERVICES[0],
+    location: LOCATIONS[0],
+    addon: ADDONS[0],
     date: "",
   });
 
   const [submitted, setSubmitted] = useState(false);
+
   const dateRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const loadData = async () => {
-      const { data: s } = await supabase
-        .from("config_services")
-        .select("id, label")
-        .eq("is_active", true);
-
-      const { data: l } = await supabase
-        .from("config_locations")
-        .select("id, label")
-        .eq("is_active", true);
-
-      const { data: a } = await supabase
-        .from("config_addons")
-        .select("id, label")
-        .eq("is_active", true);
-
-      setServices(s || []);
-      setLocations(l || []);
-      setAddons(a || []);
-
-      setForm((prev) => ({
-        ...prev,
-        service: s?.[0]?.label || "",
-        location: l?.[0]?.label || "",
-        addon: a?.[0]?.label || "",
-      }));
-    };
-
-    loadData();
-  }, []);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -92,18 +65,21 @@ Location: ${form.location}
 Add-on: ${form.addon}
 Date: ${form.date}`;
 
-    const whatsappUrl = `https://wa.me/9538926581?text=${encodeURIComponent(
-      message,
-    )}`;
+    const whatsappUrl = `https://wa.me/9538926581?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };
 
   return (
+<<<<<<< HEAD
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+=======
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[var(--blue-main)] via-[#1E3A8A] to-black p-6">
+>>>>>>> parent of bd4000a (added basic toggle for website)
 
       <div className="w-full max-w-lg">
 
         <div style={{ position: 'fixed', top: 24, left: 24, zIndex: 50 }}>
+<<<<<<< HEAD
             <button
               type="button"
               className="px-6 py-2 rounded-full font-semibold text-white bg-blue-500 hover:bg-blue-700 transition-all duration-300 shadow-lg"
@@ -114,6 +90,15 @@ Date: ${form.date}`;
             >
               Go Back to Home
             </button>
+=======
+          <button
+            type="button"
+            className="px-6 py-2 rounded-full font-semibold text-white bg-blue-500 hover:bg-blue-700 transition-all duration-300 shadow-lg"
+            onClick={() => window.location.href = '/'}
+          >
+            Go Back to Home
+          </button>
+>>>>>>> parent of bd4000a (added basic toggle for website)
         </div>
 
         {/* Header */}
@@ -133,9 +118,14 @@ Date: ${form.date}`;
             onSubmit={handleSubmit}
             className="bg-white border border-gray-200 shadow-2xl rounded-2xl p-8 space-y-5 transition hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)]"
           >
+
             {/* Name */}
             <div>
+<<<<<<< HEAD
               <label className="block text-sm text-gray-700 mb-1">Customer Name</label>
+=======
+              <label className="block text-sm text-gray-200 mb-1">Customer Name</label>
+>>>>>>> parent of bd4000a (added basic toggle for website)
               <input
                 type="text"
                 name="name"
@@ -143,15 +133,25 @@ Date: ${form.date}`;
                 onChange={handleChange}
                 required
                 placeholder="Enter your name"
+<<<<<<< HEAD
                 className="w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+=======
+                className="w-full px-4 py-2 rounded-lg bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500"
+>>>>>>> parent of bd4000a (added basic toggle for website)
               />
             </div>
 
             {/* Contact */}
             <div>
+<<<<<<< HEAD
               <label className="block text-sm text-gray-700 mb-1">Contact Details</label>
               <div className="flex">
                 <span className="px-3 py-2 rounded-l-lg bg-white border border-r-0 border-gray-300 text-gray-700 font-semibold">+91</span>
+=======
+              <label className="block text-sm text-gray-200 mb-1">Contact Details</label>
+              <div className="flex">
+                <span className="px-3 py-2 rounded-l-lg bg-white/90 border border-r-0 border-gray-300 text-gray-700 font-semibold">+91</span>
+>>>>>>> parent of bd4000a (added basic toggle for website)
                 <input
                   type="tel"
                   name="contact"
@@ -161,14 +161,22 @@ Date: ${form.date}`;
                   placeholder="Phone number"
                   pattern="[0-9]{10}"
                   maxLength={10}
+<<<<<<< HEAD
                   className="w-full px-4 py-2 rounded-r-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+=======
+                  className="w-full px-4 py-2 rounded-r-lg bg-white/90 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+>>>>>>> parent of bd4000a (added basic toggle for website)
                 />
               </div>
             </div>
 
             {/* Date */}
             <div>
+<<<<<<< HEAD
               <label className="block text-sm text-gray-700 mb-1">Booking Date</label>
+=======
+              <label className="block text-sm text-gray-200 mb-1">Booking Date</label>
+>>>>>>> parent of bd4000a (added basic toggle for website)
               <input
                 ref={dateRef}
                 type="date"
@@ -179,18 +187,30 @@ Date: ${form.date}`;
                 min={new Date().toISOString().split("T")[0]}
                 onClick={() => dateRef.current?.showPicker()}
                 onFocus={() => dateRef.current?.showPicker()}
+<<<<<<< HEAD
                 className="w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+=======
+                className="w-full px-4 py-2 rounded-lg bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+>>>>>>> parent of bd4000a (added basic toggle for website)
               />
             </div>
 
             {/* Service */}
             <div>
+<<<<<<< HEAD
               <label className="block text-sm text-gray-700 mb-1">Service Needed</label>
+=======
+              <label className="block text-sm text-gray-200 mb-1">Service Needed</label>
+>>>>>>> parent of bd4000a (added basic toggle for website)
               <select
                 name="service"
                 value={form.service}
                 onChange={handleChange}
+<<<<<<< HEAD
                 className="w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+=======
+                className="w-full px-4 py-2 rounded-lg bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500"
+>>>>>>> parent of bd4000a (added basic toggle for website)
               >
                 {SERVICES.map((service) => (
                   <option key={service} value={service}>
@@ -202,12 +222,20 @@ Date: ${form.date}`;
 
             {/* Location */}
             <div>
+<<<<<<< HEAD
               <label className="block text-sm text-gray-700 mb-1">Service Location</label>
+=======
+              <label className="block text-sm text-gray-200 mb-1">Service Location</label>
+>>>>>>> parent of bd4000a (added basic toggle for website)
               <select
                 name="location"
                 value={form.location}
                 onChange={handleChange}
+<<<<<<< HEAD
                 className="w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+=======
+                className="w-full px-4 py-2 rounded-lg bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500"
+>>>>>>> parent of bd4000a (added basic toggle for website)
               >
                 {LOCATIONS.map((location) => (
                   <option key={location} value={location}>
@@ -219,12 +247,20 @@ Date: ${form.date}`;
 
             {/* Addons */}
             <div>
+<<<<<<< HEAD
               <label className="block text-sm text-gray-700 mb-1">Add-ons</label>
+=======
+              <label className="block text-sm text-gray-200 mb-1">Add-ons</label>
+>>>>>>> parent of bd4000a (added basic toggle for website)
               <select
                 name="addon"
                 value={form.addon}
                 onChange={handleChange}
+<<<<<<< HEAD
                 className="w-full px-4 py-2 rounded-lg bg-white border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+=======
+                className="w-full px-4 py-2 rounded-lg bg-white/90 focus:outline-none focus:ring-2 focus:ring-blue-500"
+>>>>>>> parent of bd4000a (added basic toggle for website)
               >
                 {ADDONS.map((addon) => (
                   <option key={addon} value={addon}>
@@ -233,6 +269,7 @@ Date: ${form.date}`;
                 ))}
               </select>
             </div>
+<<<<<<< HEAD
 
             {/* Button */}
             <button
@@ -245,10 +282,17 @@ Date: ${form.date}`;
                 </option>
               ))}
             </select>
+=======
+>>>>>>> parent of bd4000a (added basic toggle for website)
 
-            <button className="w-full py-3 rounded-lg bg-blue-500 text-white">
+            {/* Button */}
+            <button
+              type="submit"
+              className="w-full py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 transition transform hover:scale-[1.02] shadow-lg"
+            >
               Book Service 🚗
             </button>
+
           </form>
         )}
       </div>
