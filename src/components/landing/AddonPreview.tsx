@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
+import { motion } from "framer-motion";
 
 type Addon = {
   id: string;
@@ -10,15 +11,26 @@ type Addon = {
 
 export function AddonPreview() {
   const [addons, setAddons] = useState<Addon[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
-      const { data } = await supabase
-        .from("config_addons")
-        .select("*")
-        .eq("is_active", true);
+      try {
+        const { data, error } = await supabase
+          .from("config_addons")
+          .select("*")
+          .eq("is_active", true)
+          // Filtering out 'None' if you don't want to show it as a card
+          .not("label", "eq", "None")
+          .order("price", { ascending: true });
 
-      setAddons(data || []);
+        if (error) throw error;
+        setAddons(data || []);
+      } catch (err) {
+        console.error("Error fetching addons:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
     load();
@@ -43,30 +55,72 @@ export function AddonPreview() {
   }, []);
 
   return (
-    <section className="py-24 bg-[#0f172a]">
-      <div className="max-w-7xl mx-auto px-6">
-        <h2 className="text-4xl font-bold text-white text-center mb-12">
-          Add-ons
-        </h2>
+    <section className="py-24 bg-[#0f172a] relative overflow-hidden border-t border-white/5">
+      {/* Subtle Background Accent */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {addons.map((addon) => (
-            <div
-              key={addon.id}
-              className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-400/40 transition"
-            >
-              <h3 className="text-lg font-semibold text-white mb-2">
-                {addon.label}
-              </h3>
+      <div className="max-w-7xl mx-auto px-6 relative">
+        <header className="text-center mb-16">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight"
+          >
+            Extra <span className="text-blue-400">Add-ons</span>
+          </motion.h2>
+          <p className="text-slate-400 max-w-xl mx-auto">
+            Enhance your cleaning experience with our specialized treatments.
+            Pricing below includes all applicable taxes.
+          </p>
+        </header>
 
-              <p className="text-sm text-gray-400 mb-4">{addon.description}</p>
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <div className="w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {addons.map((addon) => {
+              // GST Calculation: 18%
+              const basePrice = addon.price || 0;
+              const finalPrice = basePrice * 1.18;
 
-              <span className="text-cyan-300 font-bold text-xl">
-                ₹{addon.price}
-              </span>
-            </div>
-          ))}
-        </div>
+              return (
+                <motion.div
+                  key={addon.id}
+                  whileHover={{ scale: 1.02 }}
+                  className="group p-6 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-blue-500/40 hover:bg-white/[0.05] transition-all duration-300 flex flex-col justify-between"
+                >
+                  <div>
+                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
+                      {addon.label}
+                    </h3>
+                    <p className="text-sm text-slate-400 leading-relaxed mb-6 line-clamp-3">
+                      {addon.description ||
+                        "Specialized treatment for your vehicle's specific needs."}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t border-white/5 flex items-baseline justify-between">
+                    <div>
+                      <span className="text-2xl font-black text-white">
+                        ₹
+                        {finalPrice.toLocaleString("en-IN", {
+                          maximumFractionDigits: 0,
+                        })}
+                      </span>
+                      <span className="ml-1 text-[10px] text-slate-500 font-bold uppercase tracking-tighter">
+                        incl. GST
+                      </span>
+                    </div>
+
+                    <div className="h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </section>
   );
