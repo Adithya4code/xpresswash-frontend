@@ -4,6 +4,8 @@ import { supabase } from "@/lib/supabaseClient";
 import {
   fetchAdminData,
   saveItem,
+  getBookingLink,
+  updateBookingLink,
   type AdminData,
   type BaseItem,
 } from "@/utils/adminUtils";
@@ -38,6 +40,8 @@ export default function Admin() {
     table: "",
     item: null,
   });
+
+  const [bookingLink, setBookingLink] = useState("");
 
   // ---------------- AUTH CHECK ----------------
   useEffect(() => {
@@ -108,6 +112,14 @@ export default function Admin() {
     };
   }, [isAdmin, refresh]);
 
+  useEffect(() => {
+    const loadBookingLink = async () => {
+      const link = await getBookingLink();
+      setBookingLink(link);
+    };
+
+    loadBookingLink();
+  }, []);
   // ---------------- MODAL HANDLERS ----------------
   const handleOpenModal = (
     table: string,
@@ -211,6 +223,28 @@ export default function Admin() {
             Logout
           </button>
         </header>
+
+        <div className="bg-white rounded-xl p-6 mb-10 shadow">
+          <h2 className="text-lg font-bold mb-4">Booking Form Link</h2>
+
+          <input
+            type="text"
+            value={bookingLink}
+            onChange={(e) => setBookingLink(e.target.value)}
+            className="w-full border rounded-lg px-4 py-2 mb-4"
+            placeholder="Enter booking form URL"
+          />
+
+          <button
+            onClick={async () => {
+              await updateBookingLink(bookingLink);
+              alert("Booking link updated!");
+            }}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+          >
+            Save
+          </button>
+        </div>
 
         {/* Sections */}
         <Section

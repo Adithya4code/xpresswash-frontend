@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../../lib/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 import { motion } from "framer-motion";
+import { getBookingLink } from "@/utils/adminUtils";
 
 type Subscription = {
   id: string;
@@ -44,7 +45,7 @@ export function SubscriptionPreview() {
         () => {
           // Reload subscriptions when any row is updated/inserted/deleted
           load();
-        }
+        },
       )
       .subscribe();
 
@@ -145,7 +146,15 @@ export function SubscriptionPreview() {
                       Incl. 18% GST (CGST 9% + SGST 9%)
                     </span>
 
-                    <button className="w-full mt-6 bg-white text-black font-black py-3 rounded-2xl hover:bg-blue-500 hover:text-white transition-all active:scale-95 shadow-xl">
+                    <button
+                      onClick={async () => {
+                        const link = await getBookingLink();
+                        if (link) {
+                          window.open(link, "_blank"); // or popup if you want
+                        }
+                      }}
+                      className="w-full mt-6 bg-white text-black font-black py-3 rounded-2xl hover:bg-blue-500 hover:text-white transition-all active:scale-95 shadow-xl"
+                    >
                       SUBSCRIBE NOW
                     </button>
                   </div>

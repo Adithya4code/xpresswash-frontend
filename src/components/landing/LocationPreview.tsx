@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../../lib/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 
 type Location = {
   id: string;
@@ -30,7 +30,7 @@ export function LocationPreview() {
         () => {
           // Reload locations when any row is updated/inserted/deleted
           load();
-        }
+        },
       )
       .subscribe();
 

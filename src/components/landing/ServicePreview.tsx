@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { getBookingLink } from "@/utils/adminUtils";
 
 type Service = {
   id: string;
@@ -90,7 +91,15 @@ const ServiceCard = ({ service }: { service: Service }) => {
             (Incl. 18% GST)
           </span>
         </div>
-        <button className="px-6 py-2.5 rounded-2xl font-bold text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-blue-500/20 uppercase text-xs">
+        <button
+          onClick={async () => {
+            const link = await getBookingLink();
+            if (link) {
+              window.open(link, "_blank");
+            }
+          }}
+          className="px-6 py-2.5 rounded-2xl font-bold text-white bg-gradient-to-r from-blue-600 to-cyan-500 hover:brightness-110 active:scale-95 transition-all shadow-lg shadow-blue-500/20 uppercase text-xs"
+        >
           Book
         </button>
       </div>
@@ -131,7 +140,7 @@ export function ServicesPreview() {
         () => {
           // Reload services when any row is updated/inserted/deleted
           loadServices();
-        }
+        },
       )
       .subscribe();
 
