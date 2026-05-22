@@ -8,6 +8,7 @@ import { CTA } from "@/components/landing/CTA";
 import { ServicesPreview } from "@/components/landing/ServicePreview";
 import { AddonPreview } from "@/components/landing/AddonPreview";
 import { SubscriptionPreview } from "@/components/landing/SubscriptionPreview";
+import { SubscriptionFeatures } from "@/components/landing/SubscriptionFeatures";
 import { LocationPreview } from "@/components/landing/LocationPreview";
 import { FAQSection } from "@/components/landing/FAQSection";
 
@@ -17,8 +18,9 @@ export default function Landing() {
       <Navbar />
       <Hero />
       <ServicesPreview />
-      <AddonPreview />
       <SubscriptionPreview />
+      <SubscriptionFeatures />
+      <AddonPreview />
       <ValueProps />
       <HowItWorks />
       <WhyUs />

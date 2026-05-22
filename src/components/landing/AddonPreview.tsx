@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../../lib/supabaseClient";
+import { supabase } from "@/lib/supabaseClient";
 import { motion } from "framer-motion";
 
 type Addon = {
@@ -20,7 +20,6 @@ export function AddonPreview() {
           .from("config_addons")
           .select("*")
           .eq("is_active", true)
-          // Filtering out 'None' if you don't want to show it as a card
           .not("label", "eq", "None")
           .order("price", { ascending: true });
 
@@ -35,86 +34,76 @@ export function AddonPreview() {
 
     load();
 
-    // Subscribe to real-time changes on config_addons
     const channel = supabase
       .channel("config_addons_changes")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "config_addons" },
-        () => {
-          // Reload addons when any row is updated/inserted/deleted
-          load();
-        }
+        () => load(),
       )
       .subscribe();
 
-    // Cleanup subscription on unmount
     return () => {
       supabase.removeChannel(channel);
     };
   }, []);
 
   return (
-    <section className="py-24 bg-[#0f172a] relative overflow-hidden border-t border-white/5">
-      {/* Subtle Background Accent */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-6 relative">
-        <header className="text-center mb-16">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-black text-white mb-4 tracking-tight"
-          >
-            Extra <span className="text-blue-400">Add-ons</span>
-          </motion.h2>
-          <p className="text-slate-400 max-w-xl mx-auto">
-            Enhance your cleaning experience with our specialized treatments.
-            Pricing below includes all applicable taxes.
+    <section className="py-20 bg-[#020617] relative border-t border-slate-900 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <header className="text-center mb-14">
+          <h2 className="text-3xl md:text-4xl font-black text-white mb-4 tracking-tight">
+            Premium <span className="text-cyan-400">Add-ons</span>
+          </h2>
+          <p className="text-slate-400 text-sm max-w-lg mx-auto">
+            A la carte upgrades to perfect your detail. Available to add on
+            during booking.
           </p>
         </header>
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <div className="w-8 h-8 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
+          <div className="flex justify-center py-10">
+            <div className="w-8 h-8 border-2 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {addons.map((addon) => {
-              // GST Calculation: 18%
-              const basePrice = addon.price || 0;
-              const finalPrice = basePrice * 1.18;
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {addons.map((addon, index) => {
+              const finalPrice = (addon.price || 0) * 1.18;
 
               return (
                 <motion.div
                   key={addon.id}
-                  whileHover={{ scale: 1.02 }}
-                  className="group p-6 rounded-3xl bg-white/[0.03] border border-white/10 hover:border-blue-500/40 hover:bg-white/[0.05] transition-all duration-300 flex flex-col justify-between"
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  viewport={{ once: true }}
+                  className="group relative p-5 rounded-2xl bg-slate-900/40 border border-slate-800 hover:border-cyan-500/40 hover:bg-slate-800/50 transition-all duration-300 flex flex-col justify-between overflow-hidden"
                 >
-                  <div>
-                    <h3 className="text-lg font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">
+                  {/* Subtle hover gradient background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                  <div className="relative z-10">
+                    <h3 className="text-base font-bold text-slate-200 mb-1.5 group-hover:text-cyan-300 transition-colors">
                       {addon.label}
                     </h3>
-                    <p className="text-sm text-slate-400 leading-relaxed mb-6 line-clamp-3">
+                    <p className="text-xs text-slate-500 leading-relaxed mb-4 line-clamp-2">
                       {addon.description ||
-                        "Specialized treatment for your vehicle's specific needs."}
+                        "Specialized enhancement for your vehicle."}
                     </p>
                   </div>
 
-                  <div className="pt-4 border-t border-white/5 flex items-baseline justify-between">
-                    <div>
-                      <span className="text-2xl font-black text-white">
+                  <div className="relative z-10 pt-3 border-t border-slate-800 flex items-center justify-between">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-lg font-black text-white">
                         ₹
                         {finalPrice.toLocaleString("en-IN", {
                           maximumFractionDigits: 0,
                         })}
                       </span>
-                      <span className="ml-1 text-[10px] text-slate-500 font-bold uppercase tracking-tighter">
-                        incl. GST
-                      </span>
                     </div>
-
-                    <div className="h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
+                    <span className="text-[9px] text-slate-600 font-bold uppercase tracking-wider bg-slate-950 px-2 py-1 rounded-md">
+                      + GST Incl
+                    </span>
                   </div>
                 </motion.div>
               );
