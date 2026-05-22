@@ -5,6 +5,10 @@ export interface BaseItem {
   label: string;
   is_active: boolean;
   description?: string;
+  // Tiered Pricing fields matching your current database schema layout
+  price_hatchback?: string | number;
+  price_sedan?: string | number;
+  price_suv?: string | number;
   base_price?: number;
   price?: number;
   vehicle_type?: string;
@@ -48,7 +52,6 @@ export const saveItem = async (table: string, item: BaseItem) => {
   }
 
   const { ...insertData } = item;
-
   const { data, error } = await supabase.from(table).insert([insertData]);
 
   if (error) {
@@ -59,33 +62,38 @@ export const saveItem = async (table: string, item: BaseItem) => {
   return data;
 };
 
-// ================= NEW: BOOKING LINK =================
+// ================= FIXED: BOOKING LINK MANAGEMENT =================
 
-// 🔹 Fetch booking link
-export const getBookingLink = async (): Promise<string> => {
-  const { data, error } = await supabase
-    .from("app_config")
-    .select("value")
-    .eq("key", "booking_link")
-    .single();
+// Safe array fallback check avoiding the 406 single-coercion layout crash
+export const getBookingLink = async (
+  key: string = "booking_link",
+): Promise<string> => {
+  try {
+    const { data, error } = await supabase
+      .from("app_config")
+      .select("value")
+      .eq("key", key);
 
-  if (error) {
-    console.error("Fetch booking link error:", error.message);
+    if (error) throw error;
+
+    if (data && data.length > 0) {
+      return data[0].value || "";
+    }
+    return "";
+  } catch (error) {
+    console.error(`Fetch booking link error for key "${key}":`, error);
     return "";
   }
-
-  return data?.value || "";
 };
 
-// 🔹 Update booking link (admin only)
-export const updateBookingLink = async (link: string) => {
+// Target and upsert database rows without causing target row collision errors
+export const updateBookingLink = async (key: string, link: string) => {
   const { error } = await supabase
     .from("app_config")
-    .update({ value: link })
-    .eq("key", "booking_link");
+    .upsert({ key: key, value: link }, { onConflict: "key" });
 
   if (error) {
-    console.error("Update booking link error:", error.message);
+    console.error(`Update booking link error for key "${key}":`, error);
     throw error;
   }
 };

@@ -41,20 +41,19 @@ export default function Admin() {
     item: null,
   });
 
-  const [bookingLink, setBookingLink] = useState("");
+  const [servicesLink, setServicesLink] = useState("");
+  const [subscriptionLink, setSubscriptionLink] = useState("");
 
   // ---------------- AUTH CHECK ----------------
   useEffect(() => {
     const checkUser = async () => {
       const { data } = await supabase.auth.getUser();
-      console.log(data.user);
 
       if (data?.user) {
         const role = data.user.user_metadata?.role;
         setIsAuthenticated(true);
         setIsAdmin(role === "admin");
       }
-
       setCheckingAuth(false);
     };
 
@@ -74,12 +73,9 @@ export default function Admin() {
     }
 
     const { data } = await supabase.auth.getUser();
-    if (!data.user) {
-      return;
-    }
+    if (!data.user) return;
 
     const role = data.user.user_metadata?.role;
-
     if (role !== "admin") {
       alert("Not authorized");
       return;
@@ -98,32 +94,22 @@ export default function Admin() {
 
   useEffect(() => {
     if (!isAdmin) return;
-
-    let isMounted = true;
-
-    const init = async () => {
-      const res = await fetchAdminData();
-      if (isMounted) {
-        setData(res);
-        setLoading(false);
-      }
-    };
-
-    init();
-
-    return () => {
-      isMounted = false;
-    };
+    refresh();
   }, [isAdmin, refresh]);
 
+  // Pull individual config fields explicitly from your database layout
   useEffect(() => {
-    const loadBookingLink = async () => {
-      const link = await getBookingLink();
-      setBookingLink(link);
+    const loadBookingLinks = async () => {
+      const srvLink = await getBookingLink("services_booking_link");
+      const subLink = await getBookingLink("subscription_booking_link");
+
+      setServicesLink(srvLink);
+      setSubscriptionLink(subLink);
     };
 
-    loadBookingLink();
+    loadBookingLinks();
   }, []);
+
   // ---------------- MODAL HANDLERS ----------------
   const handleOpenModal = (
     table: string,
@@ -142,21 +128,22 @@ export default function Admin() {
 
   const handleSave = async () => {
     if (!modal.item || !modal.table) return;
-    await saveItem(modal.table, modal.item);
-    closeModal();
-    refresh();
+    try {
+      await saveItem(modal.table, modal.item);
+      closeModal();
+      refresh();
+    } catch (err) {
+      alert(`Save Error: ${err}`);
+    }
   };
 
-  // ---------------- LOADING ----------------
   if (checkingAuth) return null;
 
-  // ---------------- LOGIN MODAL ----------------
   if (!isAuthenticated || !isAdmin) {
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
         <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 w-[350px] text-white shadow-2xl">
           <h2 className="text-xl font-bold mb-6 text-center">Admin Login</h2>
-
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -168,18 +155,16 @@ export default function Admin() {
               name="email"
               type="email"
               placeholder="Email"
-              className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 outline-none"
+              className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 outline-none text-white"
               required
             />
-
             <input
               name="password"
               type="password"
               placeholder="Password"
-              className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 outline-none"
+              className="px-4 py-2 rounded-lg bg-white/10 border border-white/20 outline-none text-white"
               required
             />
-
             <button
               type="submit"
               className="bg-blue-500 hover:bg-blue-600 transition rounded-lg py-2 font-semibold"
@@ -192,7 +177,6 @@ export default function Admin() {
     );
   }
 
-  // ---------------- DASHBOARD LOADING ----------------
   if (loading) {
     return (
       <div className="min-h-screen bg-[#020617] flex items-center justify-center text-white italic">
@@ -201,7 +185,6 @@ export default function Admin() {
     );
   }
 
-  // ---------------- MAIN UI ----------------
   return (
     <div className="min-h-screen bg-slate-100/50 text-slate-900 p-8">
       <div className="max-w-6xl mx-auto">
@@ -214,43 +197,70 @@ export default function Admin() {
               Manage service pricing, locations, and subscriptions.
             </p>
           </div>
-
-          {/* Logout */}
           <button
             onClick={async () => {
               await supabase.auth.signOut();
               setIsAuthenticated(false);
               setIsAdmin(false);
             }}
-            className="bg-red-500 text-white px-4 py-2 rounded-lg"
+            className="bg-red-500 text-white px-4 py-2 rounded-lg font-bold text-sm"
           >
             Logout
           </button>
         </header>
 
-        <div className="bg-white rounded-xl p-6 mb-10 shadow">
-          <h2 className="text-lg font-bold mb-4">Booking Form Link</h2>
+        {/* ---------------- BOOKING LINKS SECTION ---------------- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          <div className="bg-white rounded-xl p-6 shadow">
+            <h2 className="text-lg font-bold mb-4">
+              Services Booking Form Link
+            </h2>
+            <input
+              type="text"
+              value={servicesLink}
+              onChange={(e) => setServicesLink(e.target.value)}
+              className="w-full border rounded-lg px-4 py-2 mb-4"
+              placeholder="Enter services booking form URL"
+            />
+            <button
+              onClick={async () => {
+                await updateBookingLink("services_booking_link", servicesLink);
+                alert("Services booking link updated!");
+              }}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition"
+            >
+              Save Services Link
+            </button>
+          </div>
 
-          <input
-            type="text"
-            value={bookingLink}
-            onChange={(e) => setBookingLink(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2 mb-4"
-            placeholder="Enter booking form URL"
-          />
-
-          <button
-            onClick={async () => {
-              await updateBookingLink(bookingLink);
-              alert("Booking link updated!");
-            }}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-          >
-            Save
-          </button>
+          <div className="bg-white rounded-xl p-6 shadow">
+            <h2 className="text-lg font-bold mb-4">
+              Subscription Booking Form Link
+            </h2>
+            <input
+              type="text"
+              value={subscriptionLink}
+              onChange={(e) => setSubscriptionLink(e.target.value)}
+              className="w-full border rounded-lg px-4 py-2 mb-4"
+              placeholder="Enter subscription booking form URL"
+            />
+            <button
+              onClick={async () => {
+                await updateBookingLink(
+                  "subscription_booking_link",
+                  subscriptionLink,
+                );
+                alert("Subscription booking link updated!");
+              }}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition"
+            >
+              Save Subscription Link
+            </button>
+          </div>
         </div>
 
-        {/* Sections */}
+        {/* ---------------- SECTIONS ---------------- */}
+        {/* Updated key structures to ensure new inputs submit correctly */}
         <Section
           title="Wash Services"
           color="bg-blue-500"
@@ -260,7 +270,10 @@ export default function Admin() {
             handleOpenModal("config_services", {
               label: "",
               description: "",
-              base_price: 0,
+              price_hatchback: 0,
+              price_sedan: 0,
+              price_suv: 0,
+              display_order: data.services.length + 1,
               is_active: true,
             })
           }

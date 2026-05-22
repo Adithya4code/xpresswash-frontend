@@ -1,130 +1,179 @@
-import { FiPlus, FiEdit2, FiTrash2 } from "react-icons/fi";
-import { supabase } from "@/lib/supabaseClient";
 import { type BaseItem } from "@/utils/adminUtils";
+import { supabase } from "@/lib/supabaseClient";
 
 interface SectionProps {
   title: string;
+  color: string;
   data: BaseItem[];
   table: string;
   onAdd: () => void;
   onEdit: (table: string, item: BaseItem) => void;
-  refresh: () => void;
-  color: string; // Used for the top accent bar
+  refresh: () => Promise<void>;
 }
 
-export const Section = ({
+export function Section({
   title,
+  color,
   data,
   table,
   onAdd,
   onEdit,
   refresh,
-  color,
-}: SectionProps) => {
-  const handleToggle = async (id: string, currentStatus: boolean) => {
-    await supabase
-      .from(table)
-      .update({ is_active: !currentStatus })
-      .eq("id", id);
-    refresh();
-  };
-
+}: SectionProps) {
   const handleDelete = async (id: string) => {
-    if (!confirm("Delete this item?")) return;
-    await supabase.from(table).delete().eq("id", id);
-    refresh();
+    if (
+      !window.confirm("Are you sure you want to completely delete this entry?")
+    )
+      return;
+    try {
+      const { error } = await supabase.from(table).delete().eq("id", id);
+      if (error) throw error;
+      refresh();
+    } catch (err: any) {
+      alert(`Delete Error: ${err.message}`);
+    }
   };
 
   return (
-    <section className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-8">
-      {/* Accent Bar */}
-      <div className={`h-1.5 w-full ${color}`} />
-
-      <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-        <h2 className="text-xl font-bold text-slate-800 tracking-tight">
-          {title}
-        </h2>
+    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden mb-10">
+      {/* Title Header Grid */}
+      <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className={`w-3 h-6 rounded-full ${color}`} />
+          <h2 className="text-xl font-black text-slate-900 tracking-tight">
+            {title}
+          </h2>
+          <span className="bg-slate-200/70 text-slate-700 px-2.5 py-0.5 rounded-full text-xs font-bold">
+            {data.length} entries
+          </span>
+        </div>
         <button
           onClick={onAdd}
-          className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-all"
+          className="bg-slate-900 hover:bg-slate-800 text-white text-xs font-black uppercase tracking-wider px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-sm"
         >
-          <FiPlus /> New Entry
+          ➕ New Entry
         </button>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-slate-50 text-slate-500 text-[11px] uppercase font-bold tracking-wider">
-              <th className="px-6 py-3 border-b border-slate-100">
-                Label & Description
-              </th>
-              <th className="px-6 py-3 border-b border-slate-100">Details</th>
-              <th className="px-6 py-3 border-b border-slate-100 text-center">
-                Status
-              </th>
-              <th className="px-6 py-3 border-b border-slate-100 text-right">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {data.map((item) => (
-              <tr
-                key={item.id}
-                className="hover:bg-slate-50/80 transition-colors group"
-              >
-                <td className="px-6 py-4 max-w-md">
-                  <p className="font-semibold text-slate-900">{item.label}</p>
-                  <p className="text-sm text-slate-500 truncate">
-                    {item.description || "No description provided."}
-                  </p>
-                </td>
-                <td className="px-6 py-4 text-sm font-medium text-slate-700">
-                  {item.base_price !== undefined && (
-                    <span>₹{item.base_price}</span>
-                  )}
-                  {item.price !== undefined && <span>₹{item.price}</span>}
-                  {item.wash_count && (
-                    <span className="block text-xs text-slate-400">
-                      {item.wash_count} Washes ({item.vehicle_type})
-                    </span>
-                  )}
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <button
-                    onClick={() => handleToggle(item.id!, item.is_active)}
-                    className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all
-                      ${
-                        item.is_active
-                          ? "bg-green-50 text-green-700 border-green-200"
-                          : "bg-slate-100 text-slate-500 border-slate-200"
-                      }`}
-                  >
-                    {item.is_active ? "Live" : "Draft"}
-                  </button>
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={() => onEdit(table, item)}
-                      className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition"
-                    >
-                      <FiEdit2 size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item.id!)}
-                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-md transition"
-                    >
-                      <FiTrash2 size={16} />
-                    </button>
-                  </div>
-                </td>
+      {/* Row Listings */}
+      {data.length === 0 ? (
+        <div className="p-12 text-center text-slate-400 text-sm font-medium italic">
+          No records found in this table configuration.
+        </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-slate-100 text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50/20">
+                <th className="py-3 px-6 w-[45%]">Label & Description</th>
+                <th className="py-3 px-6 w-[25%]">Pricing Tiers</th>
+                <th className="py-3 px-6 w-[15%]">Status</th>
+                <th className="py-3 px-6 w-[15%] text-right">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </section>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {data.map((item) => (
+                <tr
+                  key={item.id}
+                  className="hover:bg-slate-50/60 transition group"
+                >
+                  {/* Label Block */}
+                  <td className="py-4 px-6 vertical-top">
+                    <span className="font-bold text-slate-800 text-sm block group-hover:text-blue-600 transition">
+                      {item.label}
+                    </span>
+                    {item.description && (
+                      <p className="text-xs text-slate-400 mt-1 line-clamp-2 max-w-md font-medium">
+                        {item.description}
+                      </p>
+                    )}
+                  </td>
+
+                  {/* Pricing Matrix Layout Rendering */}
+                  <td className="py-4 px-6 text-xs font-semibold text-slate-600">
+                    {table === "config_services" &&
+                      (item.label?.toLowerCase().includes("platinum") ? (
+                        <span className="bg-purple-100 text-purple-700 font-bold px-2 py-1 rounded">
+                          Flat: ₹{item.base_price}
+                        </span>
+                      ) : (
+                        <div className="flex flex-col gap-1 text-[11px]">
+                          <span>
+                            🚗 Hatch:{" "}
+                            <strong className="text-slate-800">
+                              ₹{item.price_hatchback}
+                            </strong>
+                          </span>
+                          <span>
+                            🚙 Sedan:{" "}
+                            <strong className="text-slate-800">
+                              ₹{item.price_sedan}
+                            </strong>
+                          </span>
+                          <span>
+                            🛻 SUV:{" "}
+                            <strong className="text-slate-800">
+                              ₹{item.price_suv}
+                            </strong>
+                          </span>
+                        </div>
+                      ))}
+                    {table === "config_addons" && (
+                      <span className="text-sm font-bold text-slate-800">
+                        ₹{item.price}
+                      </span>
+                    )}
+                    {table === "config_subscriptions" && (
+                      <span>
+                        ₹{item.base_price}{" "}
+                        <span className="text-slate-400 font-normal">
+                          ({item.wash_count} Washes)
+                        </span>
+                      </span>
+                    )}
+                    {table === "config_locations" && (
+                      <span className="text-slate-400 font-normal italic">
+                        Fixed Base Region
+                      </span>
+                    )}
+                  </td>
+
+                  {/* Live Visibility Status */}
+                  <td className="py-4 px-6">
+                    {item.is_active ? (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide bg-emerald-100 text-emerald-800">
+                        Live
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wide bg-slate-100 text-slate-400">
+                        Hidden
+                      </span>
+                    )}
+                  </td>
+
+                  {/* ⚡ THE BIG FIX: Wired Action buttons right into the table layout row ⚡ */}
+                  <td className="py-4 px-6 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => onEdit(table, item)}
+                        className="px-3 py-1.5 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 rounded-lg text-xs font-bold uppercase tracking-wider transition"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => item.id && handleDelete(item.id)}
+                        className="px-3 py-1.5 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-400 rounded-lg text-xs font-bold uppercase tracking-wider transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   );
-};
+}
