@@ -1,5 +1,3 @@
-import React from "react";
-
 export function SubscriptionFeatures() {
   const standardInclusions = [
     "Exterior Steam Wash",
