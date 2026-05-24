@@ -6,8 +6,18 @@ import { motion, AnimatePresence } from "framer-motion";
 function scrollToSection(sectionId: string) {
   const section = document.getElementById(sectionId);
   if (section) {
-    section.scrollIntoView({ behavior: "smooth" });
+    // 💡 Added top offset calculation to prevent fixed nav headers from covering the section title
+    const headerOffset = 80;
+    const elementPosition = section.getBoundingClientRect().top;
+    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+    window.scrollTo({
+      top: offsetPosition,
+      behavior: "smooth",
+    });
+    return true;
   }
+  return false;
 }
 
 export function Navbar() {
@@ -20,14 +30,11 @@ export function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
-      // Smart Scroll: Hide on scroll down, show on scroll up
       if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-        setIsVisible(false); // Scrolling Down -> Hide
+        setIsVisible(false);
       } else {
-        setIsVisible(true); // Scrolling Up -> Show
+        setIsVisible(true);
       }
-
       lastScrollY.current = currentScrollY;
     };
 
@@ -45,13 +52,37 @@ export function Navbar() {
     }
   };
 
+  // 🔥 POWERFUL ALTERNATIVE SCROLL HANDLER FOR ROUTING PACKAGES
   const goToSection = (section: string) => {
+    // First: Close menu drawer immediately to prevent animation lockups
     setMenuOpen(false);
+
     if (window.location.pathname === "/") {
-      scrollToSection(section);
+      // Small timeout gives Framer Motion 50ms to clear its full screen layout overlay
+      setTimeout(() => {
+        const scrolled = scrollToSection(section);
+        // Instant absolute jump fallback if hardware smooth scrolling fails on iOS/Android WebViews
+        if (!scrolled) {
+          const el = document.getElementById(section);
+          if (el) el.scrollIntoView();
+        }
+      }, 50);
     } else {
+      // If navigating from /admin, switch routes first
       navigate("/");
-      setTimeout(() => scrollToSection(section), 100);
+
+      let attempts = 0;
+      const interval = setInterval(() => {
+        const success = scrollToSection(section);
+        attempts++;
+        if (success || attempts > 30) {
+          clearInterval(interval);
+          if (!success) {
+            const el = document.getElementById(section);
+            if (el) el.scrollIntoView();
+          }
+        }
+      }, 100);
     }
   };
 
@@ -102,7 +133,7 @@ export function Navbar() {
 
         {/* MOBILE MENU TRIGGER BUTTON */}
         <button
-          className="md:hidden p-2 rounded-lg text-slate-900 hover:bg-slate-100 transition-colors"
+          className="md:hidden p-2 rounded-lg text-slate-900 hover:bg-slate-100 transition-colors z-50"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle Menu"
         >
@@ -138,14 +169,16 @@ export function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="absolute top-full left-0 w-full bg-white border-b border-slate-200 shadow-2xl md:hidden overflow-hidden"
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="absolute top-full left-0 w-full bg-white border-b border-slate-200 shadow-2xl md:hidden overflow-hidden z-40"
           >
-            <div className="px-6 py-8 flex flex-col gap-5">
+            {/* 💡 Changed padding and spacing to make tap targets large and clear for thumbs */}
+            <div className="px-6 py-8 flex flex-col gap-6">
               {["Home", "Services", "FAQ"].map((item) => (
                 <button
                   key={item}
-                  className="text-left text-base font-extrabold text-slate-800 hover:text-blue-600 border-b border-slate-100 pb-3 uppercase tracking-wider"
+                  type="button"
+                  className="text-left text-lg font-black text-slate-800 hover:text-blue-600 border-b border-slate-100 pb-3 uppercase tracking-wider active:bg-slate-50 transition"
                   onClick={() =>
                     goToSection(
                       item === "Home"
@@ -161,8 +194,9 @@ export function Navbar() {
               ))}
 
               <button
+                type="button"
                 onClick={handleBook}
-                className="w-full mt-2 py-3.5 rounded-xl font-black text-xs uppercase tracking-widest text-white bg-gradient-to-r from-blue-600 to-cyan-500 shadow-md shadow-blue-500/20 active:scale-98"
+                className="w-full mt-2 py-4 rounded-xl font-black text-sm uppercase tracking-widest text-white bg-gradient-to-r from-blue-600 to-cyan-500 shadow-md active:scale-95 transition-transform"
               >
                 Book Now
               </button>
