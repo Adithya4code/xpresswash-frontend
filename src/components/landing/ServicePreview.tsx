@@ -35,6 +35,7 @@ const ServiceCard = ({ service }: { service: Service }) => {
 
   return (
     <div
+      id="services-section"
       className={`group relative flex flex-col justify-between p-6 sm:p-8 rounded-3xl backdrop-blur-md h-[600px] w-[320px] sm:w-[390px] shrink-0 snap-start transition-all duration-500 hover:-translate-y-2
         ${
           isPremium

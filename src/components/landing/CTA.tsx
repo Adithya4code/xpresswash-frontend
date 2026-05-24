@@ -3,7 +3,7 @@ import { getBookingLink } from "@/utils/adminUtils";
 
 export function CTA() {
   const handleBook = async () => {
-    const link = await getBookingLink();
+    const link = await getBookingLink("services_booking_link");
     if (link) {
       window.location.href = link;
     } else {

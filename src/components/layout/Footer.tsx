@@ -1,8 +1,20 @@
 import { getBookingLink } from "@/utils/adminUtils";
 
 export function Footer() {
+  // 🔹 Local smooth-scrolling utility function
+  const goToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      console.warn(
+        `Target section with id "${sectionId}" was not found in the DOM.`,
+      );
+    }
+  };
+
   const handleBook = async () => {
-    const link = await getBookingLink();
+    const link = await getBookingLink("services_booking_link");
     if (link) {
       window.open(link, "_blank");
     }
@@ -20,32 +32,46 @@ export function Footer() {
 
         <div>
           <h4 className="font-medium">Services</h4>
-          <ul className="mt-4 space-y-2 text-sm text-white/70">
+          <ul className="mt-4 space-y-2 text-sm text-white/70 flex flex-col items-start">
             <li>
-              <a href="#" className="hover:text-accent transition-colors">
+              <button
+                className="hover:text-accent transition-colors text-left"
+                onClick={() => goToSection("services-section")}
+              >
                 Car Service
-              </a>
+              </button>
             </li>
             <li>
-              <a href="#" className="hover:text-accent transition-colors">
+              <button
+                className="hover:text-accent transition-colors text-left"
+                onClick={() => goToSection("detailing-section")}
+              >
                 Detailing
-              </a>
+              </button>
             </li>
           </ul>
         </div>
 
         <div>
           <h4 className="font-medium">Company</h4>
-          <ul className="mt-4 space-y-2 text-sm text-white/70">
+          <ul className="mt-4 space-y-2 text-sm text-white/70 flex flex-col items-start">
             <li>
-              <a href="#" className="hover:text-accent transition-colors">
+              {/* Removed href, replaced with semantic button targeting its id section */}
+              <button
+                onClick={() => goToSection("about-section")}
+                className="hover:text-accent transition-colors text-left"
+              >
                 About
-              </a>
+              </button>
             </li>
             <li>
-              <a href="#" className="hover:text-accent transition-colors">
-                Support
-              </a>
+              {/* Removed href, replaced with semantic button targeting its id section */}
+              <button
+                onClick={() => goToSection("faq-section")}
+                className="hover:text-accent transition-colors text-left"
+              >
+                Support / FAQ
+              </button>
             </li>
           </ul>
         </div>
